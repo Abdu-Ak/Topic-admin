@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react'
+import {signIn} from 'next-auth/react'
 
 const LoginForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -12,26 +13,22 @@ const LoginForm = () => {
     const handleSubmit = async (event) => {
       event.preventDefault();
       try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(credentials),
-        });
-        
-       if (response.ok) {
        
-        console.log(await response.json());
+        const responce = await signIn("credentials",{
+          email : credentials.email,
+          password : credentials.password,
+          redirect : false
+        })
+            
+        if (responce.error) {
+          console.log(responce.error);
+          return;
+        }
 
-       }else{
-        const errorResponse = await response.json();
-        
-         console.log(errorResponse);
-       }
+        console.log("success :",responce);
 
-       
-      } catch (error) {
+
+      }catch (error) {
         console.error('Error:', error);
         // Handle error, show error message, etc.
       }
